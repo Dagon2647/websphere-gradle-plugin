@@ -21,7 +21,7 @@ class WsAntListAppsTask extends WsAntWrapperTask {
     String profile
     String profileName
     String host
-    String port
+    Integer port
     String user
     String password
 

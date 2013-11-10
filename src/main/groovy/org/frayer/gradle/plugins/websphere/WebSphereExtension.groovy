@@ -1,13 +1,18 @@
 package org.frayer.gradle.plugins.websphere
 
 class WebSphereExtension {
-    String wasHome
+    String wasHome = System.env.WAS_HOME
     String javaProperties
-    String profile
     String profileName
+    String server
     String conntype
     String host
-    String port
+    Integer port
     String user
     String password
+
+    String applicationName
+
+    Boolean quiet
+    Boolean noWait
 }

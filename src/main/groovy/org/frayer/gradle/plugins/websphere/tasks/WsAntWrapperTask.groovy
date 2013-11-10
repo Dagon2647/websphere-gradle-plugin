@@ -112,6 +112,10 @@ abstract class WsAntWrapperTask extends DefaultTask {
 
     def populateApplicableProperties() {
         propertyPopulator.populate(this, applicableExtensionPropertyValues)
+        // we always need wasHome
+        if (project.websphere.hasProperty('wasHome')) {
+            propertyPopulator.populate(this, ['wasHome': project.websphere.wasHome])
+        }
     }
 
     boolean validate() {
