@@ -10,9 +10,14 @@ repositories {
 
 dependencies {
     compile gradleApi()
-    groovy localGroovy()
+    compile localGroovy()
     
     testCompile(
         'org.spockframework:spock-core:0.6-groovy-1.8',
         'junit:junit:4.10')
+}
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "1.8"
 }
