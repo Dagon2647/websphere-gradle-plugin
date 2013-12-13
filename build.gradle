@@ -1,5 +1,6 @@
+apply plugin: 'java'
 apply plugin: 'groovy'
-//apply plugin: 'maven'
+apply plugin: "idea"
 
 group = 'org.frayer.gradle.plugins.websphere'
 version = '0.0.1-SNAPSHOT'

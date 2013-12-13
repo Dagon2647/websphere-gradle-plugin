@@ -1,33 +1,45 @@
+/*
+ *
+ *  * Copyright 2009 the original author or authors.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *      http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *
+ */
+
 package org.frayer.gradle.plugins.websphere.tasks
 
-import org.frayer.gradle.plugins.utils.utils.AntPropety
+import org.frayer.gradle.plugins.utils.utils.AntProperty
 import org.frayer.gradle.plugins.websphere.ConnectionType
 
 /**
- * Created with IntelliJ IDEA.
- * User: apimenov
- * Date: 12.12.13
- * Time: 22:53
- *  Copyright (c) ZAO "Cinimex-Informatica"
- */
-/**
  *   Base class for all task which require local WAS installation  and MAY connect to running WAS instance
+ *   @author Alexey Pimenov
  */
 public abstract class WsAntRemoteTask extends WsAntWrapperTask{
 
-    @AntPropety
+    @AntProperty
     String host;
 
-    @AntPropety
+    @AntProperty
     Integer port;
 
-    @AntPropety(required = true,value = "connType")
+    @AntProperty(required = true,value = "connType")
     ConnectionType connectionType;
 
-    @AntPropety
+    @AntProperty
     String user;
 
-    @AntPropety
+    @AntProperty
     String password;
 
 

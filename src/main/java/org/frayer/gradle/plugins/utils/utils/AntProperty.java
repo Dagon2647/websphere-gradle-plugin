@@ -16,23 +16,17 @@
  *
  */
 
-package org.frayer.gradle.plugins.utils
+package org.frayer.gradle.plugins.utils.utils;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/**
- * Populates the properties of an Object only if that Object property currently has a null value.
- *  
- * @author Michael Frayer
- */
-@Deprecated
-class PriorityToObjectPropertyPopulator implements PropertyPopulator {
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface AntProperty {
+    String value() default "";
 
-    @Override
-    public void populate(Object obj, Map propertyValues) {
-        propertyValues.each { key, value ->
-            if (obj.hasProperty(key) && (obj[key] == null)) {
-                obj[key] = value
-            }
-        }
-    }
+    boolean required() default false;
 }

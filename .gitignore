@@ -3,6 +3,8 @@
 .gradle
 .project
 .settings
+.idea
+*.iml
 bin
 build
 target
