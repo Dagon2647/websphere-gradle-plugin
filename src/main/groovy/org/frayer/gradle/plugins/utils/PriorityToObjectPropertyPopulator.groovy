@@ -6,6 +6,7 @@ package org.frayer.gradle.plugins.utils
  *  
  * @author Michael Frayer
  */
+@Deprecated
 class PriorityToObjectPropertyPopulator implements PropertyPopulator {
 
     @Override

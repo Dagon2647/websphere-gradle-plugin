@@ -1,18 +1,8 @@
 package org.frayer.gradle.plugins.websphere
 
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder;
+import org.frayer.gradle.plugins.websphere.tasks.WsListAppsTask
 
-import spock.lang.Specification
-
-class WebSpherePluginTest extends Specification {
-
-    def Project project
-
-    def setup() {
-        project = ProjectBuilder.builder().build()
-        project.apply plugin: 'websphere'
-    }
+class WebSpherePluginTest extends AbstractPluginTest{
 
     def "plugin defines a 'websphere' extension for the project"() {
         expect:
@@ -26,4 +16,28 @@ class WebSpherePluginTest extends Specification {
         expect:
         project.extensions.websphere.profileName == 'testProfile'
     }
+
+    def "Plugin defines default conventions"(){
+        given:
+        def WsListAppsTask task = project.tasks.create("wsListApps",WsListAppsTask.class);
+        when:
+        project.wasHome = "Some WAS HOME"
+        project.wasConnectionType = "RMI";
+        then:
+        task.wasHome == project.wasHome
+        task.connectionType == ConnectionType.RMI
+    }
+
+
+    def "Extension overrides convention"(){
+        given:
+        def WsListAppsTask task = project.tasks.create("wsListApps",WsListAppsTask.class);
+        when:
+        project.wasPort = 9990
+        project.extensions.websphere.port = 666
+        then:
+        task.port == 666
+    }
+
+
 }
