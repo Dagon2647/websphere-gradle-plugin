@@ -1,8 +1,7 @@
-package org.frayer.gradle.plugins.websphere.tasks
+package org.frayer.gradle.plugins.websphere.tasks.wsadmin
 
 import org.frayer.gradle.plugins.websphere.AbstractPluginTest
 import org.frayer.gradle.plugins.websphere.ConnectionType
-
 
 /**
  * @author Alexey Pimenov
