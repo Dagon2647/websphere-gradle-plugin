@@ -18,7 +18,7 @@
 
 package org.frayer.gradle.plugins.websphere
 
-import org.frayer.gradle.plugins.websphere.tasks.WsListAppsTask
+import org.frayer.gradle.plugins.websphere.tasks.WsListApps
 
 class WebSpherePluginTest extends AbstractPluginTest{
 
@@ -37,7 +37,7 @@ class WebSpherePluginTest extends AbstractPluginTest{
 
     def "Plugin defines default conventions"(){
         given:
-        def WsListAppsTask task = project.tasks.create("wsListApps",WsListAppsTask.class);
+        def WsListApps task = project.tasks.create("wsListApps",WsListApps.class);
         when:
         project.wasHome = "Some WAS HOME"
         project.wasConnectionType = "RMI";
@@ -49,7 +49,7 @@ class WebSpherePluginTest extends AbstractPluginTest{
 
     def "Extension overrides convention"(){
         given:
-        def WsListAppsTask task = project.tasks.create("wsListApps",WsListAppsTask.class);
+        def WsListApps task = project.tasks.create("wsListApps",WsListApps.class);
         when:
         project.wasPort = 9990
         project.extensions.websphere.port = 666

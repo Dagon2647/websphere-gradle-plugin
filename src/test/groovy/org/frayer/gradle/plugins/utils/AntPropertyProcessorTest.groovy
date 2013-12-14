@@ -18,15 +18,15 @@
 
 package org.frayer.gradle.plugins.utils
 
-import org.frayer.gradle.plugins.utils.utils.AntPropertyProcessor
-import org.frayer.gradle.plugins.utils.utils.AntProperty
+import org.frayer.gradle.plugins.utils.AntPropertyProcessor
+import org.frayer.gradle.plugins.utils.AntProperty
 import spock.lang.Specification
 
 class AntPropertyProcessorTest  extends Specification{
 
 
     private class A{
-        @AntProperty(required = true)
+        @AntProperty
         String propA
     }
 
@@ -35,9 +35,23 @@ class AntPropertyProcessorTest  extends Specification{
         String propB
     }
 
+    private class C extends B{
+
+        @AntProperty("propB")
+        def String getPropC(){
+           return "propBValue"
+        }
+    }
+
+
+    private AntPropertyProcessor processor;
+
+    def setup(){
+       processor = new AntPropertyProcessor();
+    }
+
     def "Must find all properties"(){
         given:
-        def AntPropertyProcessor processor = new AntPropertyProcessor()
         def instance = new B(propA: "value1",propB: "value2")
         when:
         def properties = processor.getPropertyValues(instance);
@@ -48,4 +62,19 @@ class AntPropertyProcessorTest  extends Specification{
         properties.containsKey("propA")
         properties.containsKey("propC")
     }
+
+
+    def "Getters are introspected"(){
+        given:
+        def instance = new C(propA: "A",propB: "B");
+        when:
+        def properties = processor.getPropertyValues(instance);
+        then:
+        properties.size()==3;
+        properties.containsKey("propB");
+        properties.propB.value == "propBValue"
+    }
+
+
+
 }

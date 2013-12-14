@@ -33,20 +33,10 @@ abstract class AbstractPluginTest extends Specification {
         properties.load(this.class.getResourceAsStream("/gradle.properties"));
         project = ProjectBuilder.builder().build();
 
-        project.apply plugin: 'websphere'
-
-        project.configure(project){
-            wasConnectionType = properties.wasConnectionType;
-            wasHost = properties.wasHost;
-            wasPort = Integer.parseInt(properties.wasPort);
-            wasPassword = properties.wasPassword
-            wasUser = properties.wasUser;
-            wasHome = properties.wasHome;
+        properties.each {String k,v->
+            project.setProperty(k,v);
         }
-
-
-
-
+        project.apply plugin: 'websphere'
 
     }
 }

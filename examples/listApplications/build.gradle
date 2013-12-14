@@ -1,4 +1,4 @@
-import org.frayer.gradle.plugins.websphere.tasks.WsListAppsTask
+import org.frayer.gradle.plugins.websphere.tasks.WsListApps
 
 defaultTasks 'wsListApps'
 

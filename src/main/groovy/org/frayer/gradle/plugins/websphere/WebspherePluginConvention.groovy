@@ -17,16 +17,73 @@
  */
 
 package org.frayer.gradle.plugins.websphere
-/**
- * @author  Alexey Pimenov
- * */
-class WebSpherePluginConvention {
 
-    String wasHome //= System.env.WAS_HOME
+import org.gradle.api.InvalidUserDataException
+import org.gradle.api.Project
+
+/**
+ * @author Alexey Pimenov
+ * */
+public class WebSpherePluginConvention {
+
+    String wasHome = System.env.WAS_HOME
     ConnectionType wasConnectionType = ConnectionType.SOAP;
     String wasHost = "localhost"
     Integer wasPort = 8880
     String wasUser;
     String wasPassword;
+
+    public WebSpherePluginConvention(Project project) {
+        wasHome = getProjectProperty project, "wasHome";
+        if (wasHome == null) {
+            wasHome = System.env.WAS_HOME;
+        }
+
+        wasConnectionType = getProjectProperty(project, "wasConnectionType");
+
+        if (wasConnectionType == null) {
+            wasConnectionType = ConnectionType.SOAP;
+        }
+
+        wasHost = getProjectProperty(project, "wasHost");
+
+        if (wasHost == null) {
+            wasHost = "localhost";
+        }
+
+        try{
+            def val = getProjectProperty(project, "wasPort")
+            if(val!=null){
+                wasPort = Integer.parseInt(val);
+            }
+
+        }catch (NumberFormatException e){
+            throw new InvalidUserDataException("wasPort property must be integer or string",e);
+        }
+
+        if(wasPort==null){
+            wasPort = 8880;
+        }
+
+        wasUser = getProjectProperty(project, "wasUser");
+
+        wasPassword = getProjectProperty(project, "wasPassword");
+
+
+
+
+
+    }
+
+
+    def private static getProjectProperty(Project project, String property) {
+        def result = null;
+        if (project.extensions.extraProperties.has(property)) {
+            result = project.extensions.extraProperties.get(property);
+        } else if (project.hasProperty(property)) {
+            result = project.property(result);
+        }
+        return result;
+    }
 
 }

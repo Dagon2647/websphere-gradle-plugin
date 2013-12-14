@@ -17,10 +17,15 @@
  */
 
 
-package org.frayer.gradle.plugins.utils.utils;
+package org.frayer.gradle.plugins.utils;
 
 import org.apache.commons.lang.StringUtils;
+import org.gradle.api.DefaultTask;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -39,13 +44,13 @@ public class AntPropertyProcessor {
 
     public static class AntPropertyDescriptor {
 
-        public AntPropertyDescriptor(Object value, boolean required) {
+        public AntPropertyDescriptor(Object value, String gradleName) {
             this.value = value;
-            this.required = required;
+            this.gradleName = gradleName;
         }
 
         private Object value;
-        private boolean required;
+        private String gradleName;
 
         public Object getValue() {
             return value;
@@ -55,12 +60,12 @@ public class AntPropertyProcessor {
             this.value = value;
         }
 
-        public boolean isRequired() {
-            return required;
+        public String getGradleName() {
+            return gradleName;
         }
 
-        public void setRequired(boolean required) {
-            this.required = required;
+        public void setGradleName(String gradleName) {
+            this.gradleName = gradleName;
         }
     }
 
@@ -76,22 +81,19 @@ public class AntPropertyProcessor {
         for (Class type = obj.getClass(); type != Object.class; type = type.getSuperclass()) {
             propertyInfos.addAll(getPropertiesForClass(type));
         }
-        for(PropertyInfo propertyInfo:propertyInfos){
-            Field field = propertyInfo.getField();
-            if(field==null){
+        for (PropertyInfo propertyInfo : propertyInfos) {
+
+
+            AntProperty antPropety = propertyInfo.getAnnotation(AntProperty.class);
+            if (antPropety == null) {
                 continue;
             }
 
-            AntProperty antPropety = field.getAnnotation(AntProperty.class);
-                        if(antPropety==null){
-                continue;
-            }
-
-            String name = (antPropety.value()==null||antPropety.value().isEmpty())?propertyInfo.field:antPropety.value();
+            String name = (antPropety.value() == null || antPropety.value().isEmpty()) ? propertyInfo.field : antPropety.value();
 
             Object value = propertyInfo.getValue(obj);
 
-            result.put(name,new AntPropertyDescriptor(value,antPropety.required()));
+            result.put(name, new AntPropertyDescriptor(value, propertyInfo.field));
         }
         return result;
     }
@@ -99,6 +101,7 @@ public class AntPropertyProcessor {
 
     private Set<PropertyInfo> getPropertiesForClass(Class<?> type) {
         Set<PropertyInfo> result = new HashSet<PropertyInfo>();
+
         for (Method method : type.getDeclaredMethods()) {
             if (!isGetter(method)) {
                 continue;
@@ -149,15 +152,28 @@ public class AntPropertyProcessor {
             return null;
         }
 
-        public Object getValue(Object obj){
+        public Object getValue(Object obj) {
             try {
                 return getter.invoke(obj);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
                 return null;
             } catch (InvocationTargetException e) {
-               return null;
+                return null;
             }
+        }
+
+        public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+            Field f = getField();
+            T annotation = null;
+            if (f != null) {
+                annotation = f.getAnnotation(annotationClass);
+            }
+
+            if (annotation == null) {
+                annotation = getter.getAnnotation(annotationClass);
+            }
+            return annotation;
         }
 
 

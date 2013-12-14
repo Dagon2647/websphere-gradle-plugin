@@ -20,12 +20,13 @@ package org.frayer.gradle.plugins.websphere
 
 import org.frayer.gradle.plugins.websphere.tasks.WsAntRemoteTask
 import org.frayer.gradle.plugins.websphere.tasks.WsAntWrapperTask
+import org.frayer.gradle.plugins.websphere.tasks.server.WsAntServerControl
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 /**
- * @author  Alexey Pimenov
- * @author  Michael Frayer
+ * @author Alexey Pimenov
+ * @author Michael Frayer
  */
 public class WebSpherePlugin implements Plugin<Project> {
 
@@ -40,30 +41,36 @@ public class WebSpherePlugin implements Plugin<Project> {
         this.project = project;
 
         webSphereExtension = new WebSphereExtension();
-        project.extensions.add("websphere",webSphereExtension);
-        wsConvention = new WebSpherePluginConvention();
-        project.convention.plugins.websphere= wsConvention;
+        project.extensions.add("websphere", webSphereExtension);
+        wsConvention = new WebSpherePluginConvention(project);
+        project.convention.plugins.websphere = wsConvention;
 
         configureDefaults();
     }
 
 
-    def private configureDefaults(){
-        project.tasks.withType(WsAntWrapperTask.class){ WsAntWrapperTask task->
-             task.conventionMapping.wasHome= {webSphereExtension.wasHome?:wsConvention["wasHome"]}
+    def private configureDefaults() {
+        project.tasks.withType(WsAntWrapperTask.class) { WsAntWrapperTask task ->
+            task.conventionMapping.wasHome = { webSphereExtension.wasHome ?: wsConvention["wasHome"] }
         }
 
-        project.tasks.withType(WsAntRemoteTask.class){ WsAntRemoteTask task->
-            task.conventionMapping.connectionType = {webSphereExtension.connectionType?:wsConvention["wasConnectionType"]}
+        project.tasks.withType(WsAntRemoteTask.class) { WsAntRemoteTask task ->
+            task.conventionMapping.connectionType = {
+                webSphereExtension.connectionType ?: wsConvention["wasConnectionType"]
+            }
 
-            task.conventionMapping.host = {webSphereExtension.host?:wsConvention["wasHost"]}
-            task.conventionMapping.port = {webSphereExtension.port?:wsConvention["wasPort"]}
+            task.conventionMapping.host = { webSphereExtension.host ?: wsConvention["wasHost"] }
+            task.conventionMapping.port = { webSphereExtension.port ?: wsConvention["wasPort"] }
 
-            task.conventionMapping.user = {webSphereExtension.user?:wsConvention["wasUser"]}
-            task.conventionMapping.password = {webSphereExtension.password?:wsConvention["wasPassword"]}
+            task.conventionMapping.user = { webSphereExtension.user ?: wsConvention["wasUser"] }
+            task.conventionMapping.password = { webSphereExtension.password ?: wsConvention["wasPassword"] }
+        }
+
+        project.tasks.withType(WsAntServerControl.class){ WsAntServerControl task->
+            task.conventionMapping.username = { webSphereExtension.user ?: wsConvention["wasUser"] }
+            task.conventionMapping.password = { webSphereExtension.password ?: wsConvention["wasPassword"] }
         }
     }
-
 
 
 }

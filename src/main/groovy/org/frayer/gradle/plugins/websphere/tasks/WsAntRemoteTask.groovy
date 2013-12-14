@@ -18,8 +18,9 @@
 
 package org.frayer.gradle.plugins.websphere.tasks
 
-import org.frayer.gradle.plugins.utils.utils.AntProperty
+import org.frayer.gradle.plugins.utils.AntProperty
 import org.frayer.gradle.plugins.websphere.ConnectionType
+import org.gradle.api.InvalidUserDataException
 
 /**
  *   Base class for all task which require local WAS installation  and MAY connect to running WAS instance
@@ -33,7 +34,7 @@ public abstract class WsAntRemoteTask extends WsAntWrapperTask{
     @AntProperty
     Integer port;
 
-    @AntProperty(required = true,value = "connType")
+    @AntProperty("connType")
     ConnectionType connectionType;
 
     @AntProperty
@@ -43,4 +44,19 @@ public abstract class WsAntRemoteTask extends WsAntWrapperTask{
     String password;
 
 
+
+    @Override
+    void validate() throws InvalidUserDataException {
+        super.validate()
+        if(getConnectionType()==null){
+            throw new InvalidUserDataException("Connection type is null");
+        }
+
+        if(getConnectionType()==ConnectionType.NONE) return;
+
+        if(getHost()==null|| getPort()==null || getPort()<=0){
+            throw new InvalidUserDataException("Port: ${this.getPort()} and host: ${this.getHost()} aren't setup properly with connectionType: ${this.getConnectionType()}");
+        }
+
+    }
 }

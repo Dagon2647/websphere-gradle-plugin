@@ -16,18 +16,17 @@
  *
  */
 
-package org.frayer.gradle.plugins.tasks
+package org.frayer.gradle.plugins.websphere.tasks
 
 import org.frayer.gradle.plugins.websphere.AbstractPluginTest
-import org.frayer.gradle.plugins.websphere.tasks.WsListAppsTask
 
-class WsListAppsTaskTest extends AbstractPluginTest{
+class WsListAppsTest extends AbstractPluginTest{
 
-    WsListAppsTask task;
+    WsListApps task;
 
     @Override
     def setup() {
-        task = project.tasks.create("wsListApps",WsListAppsTask.class);
+        task = project.tasks.create("wsListApps",WsListApps.class);
     }
 
 

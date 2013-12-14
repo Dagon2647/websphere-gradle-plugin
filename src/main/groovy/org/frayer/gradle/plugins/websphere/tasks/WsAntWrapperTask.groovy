@@ -17,40 +17,42 @@
  */
 
 package org.frayer.gradle.plugins.websphere.tasks
+
 import groovy.xml.MarkupBuilder
 import org.frayer.gradle.plugins.utils.PriorityToObjectPropertyPopulator
 import org.frayer.gradle.plugins.utils.PropertyPopulator
-import org.frayer.gradle.plugins.utils.utils.AntProperty
-import org.frayer.gradle.plugins.utils.utils.AntPropertyProcessor
+import org.frayer.gradle.plugins.utils.AntProperty
+import org.frayer.gradle.plugins.utils.AntPropertyProcessor
 import org.gradle.api.DefaultTask
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskExecutionException
+
 /**
  * Base class for all tasks which require to launch ws_ant utility
  *
- * @author  Michael Frayer
+ * @author Michael Frayer
  */
 
 abstract class WsAntWrapperTask extends DefaultTask {
 
 
     int buildScriptCounter = 0
-    PropertyPopulator propertyPopulator = new PriorityToObjectPropertyPopulator()
+    private static final AntPropertyProcessor processor = new AntPropertyProcessor();
     String workingDirectory = "${temporaryDir}"
 
 
-    @AntProperty(required = true)
+    @AntProperty
     String wasHome
 
+    @AntProperty
+    Boolean failOnError = true;
 
 
     abstract String getAntTaskName()
 
     abstract String getAntTaskClassName()
 
-    @Deprecated
-    abstract def getApplicablePropertyNames()
 
     @Override
     String getGroup() {
@@ -60,11 +62,12 @@ abstract class WsAntWrapperTask extends DefaultTask {
     @TaskAction
     def executeTask() {
 
-        if (validate()) {
-            def wsAntBuildScriptPath = getNextWsAntBuildScriptPath()
-            writeAntScript(wsAntBuildScriptPath)
-            executeAntScript(wsAntBuildScriptPath)
-        }
+        validate()
+
+        def wsAntBuildScriptPath = getNextWsAntBuildScriptPath()
+        writeAntScript(wsAntBuildScriptPath)
+        executeAntScript(wsAntBuildScriptPath)
+
 
     }
 
@@ -74,7 +77,7 @@ abstract class WsAntWrapperTask extends DefaultTask {
     }
 
     def getPathToWsAntScript() {
-        logger.info("WAS_HOME is: "+this.getWasHome())
+        logger.info("WAS_HOME is: " + this.getWasHome())
         def wsAntPathLocation = "${this.getWasHome()}/bin"
         def wsAntFileNamePattern = ~/^ws_ant\.(sh|bat)$/
 
@@ -82,7 +85,7 @@ abstract class WsAntWrapperTask extends DefaultTask {
         wasAntDirectory.listFiles().find { it.name ==~ wsAntFileNamePattern }?.absolutePath
     }
 
-    def executeAntScript(antBuildScriptPath) {
+    protected executeAntScript(antBuildScriptPath) {
         def wsAntScriptPath = pathToWsAntScript
 
         if (!wsAntScriptPath) {
@@ -95,10 +98,12 @@ abstract class WsAntWrapperTask extends DefaultTask {
         wsAntProc.consumeProcessOutput(System.out, System.err)
         wsAntProc.waitFor()
         int exitVal = wsAntProc.exitValue();
-        if(exitVal!=0){
-            throw new TaskExecutionException(this,new RuntimeException("Ant executions recturn code ${exitVal}"))
+        if (exitVal != 0) {
+            throw new TaskExecutionException(this, new RuntimeException("Ant executions recturn code ${exitVal}"))
         }
     }
+
+
 
     def writeAntScript(antBuildScriptPath) {
         project.mkdir(workingDirectory)
@@ -109,25 +114,35 @@ abstract class WsAntWrapperTask extends DefaultTask {
         }
     }
 
-    def getAntScriptMarkup() {
+    protected getAntScriptMarkup() {
         def writer = new StringWriter()
         def antProject = new MarkupBuilder(writer)
+        def attributes = antAttributeValues;
+        logger.debug("Executing ant task ${antTaskClassName} with attributes ${attributes}")
         antProject.project(name: 'gradleWebSpherePlugin', default: 'default') {
             taskdef(name: antTaskName, classname: antTaskClassName)
-            target(name: 'default') { "${antTaskName}"(antAttributeValues) }
+            target(name: 'default') { "${antTaskName}"(attributes) }
         }
+
         writer.flush()
         writer.close()
         writer.toString()
     }
 
-    def getAntAttributeValues() {
+    protected getAntAttributeValues() {
+
+        return getAntAttributeValues(this)
+    }
+
+    protected getAntAttributeValues(Object object){
         def antAttributeValues = [:]
-        def AntPropertyProcessor processor = new AntPropertyProcessor();
 
-        def props = processor.getPropertyValues(this);
+        def props = processor.getPropertyValues(object);
 
-        props.each { key,value->
+        props.each { key, value ->
+            if(value.value==null){
+                return;
+            }
             antAttributeValues[key] = value.value;
         }
 
@@ -137,11 +152,11 @@ abstract class WsAntWrapperTask extends DefaultTask {
 
 
 
-
-    boolean validate(){
-        if(this.getWasHome()==null||this.getWasHome().trim().isEmpty()){
-            throw new InvalidUserDataException("wasHome must be supplied to run task")
+    void validate() throws InvalidUserDataException {
+        if (this.getWasHome() == null || this.getWasHome().trim().isEmpty()) {
+            throw new InvalidUserDataException("wasHome must be set to run task")
         }
-        return true;
+
+
     };
 }

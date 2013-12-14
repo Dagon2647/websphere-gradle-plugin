@@ -16,17 +16,28 @@
  *
  */
 
-package org.frayer.gradle.plugins.utils.utils;
+package org.frayer.gradle.plugins.websphere.tasks
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.frayer.gradle.plugins.utils.AntProperty
+/**
+ * @author  Alexey Pimenov
+ *
+ */
+public class WsListApps extends WsAntRemoteTask{
 
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface AntProperty {
-    String value() default "";
+    static final String TASK_CLASS = "com.ibm.websphere.ant.tasks.ListApplications";
 
-    boolean required() default false;
+
+    @Override
+    String getAntTaskName() {
+        'wsListApps';
+    }
+
+    @Override
+    String getAntTaskClassName() {
+        return TASK_CLASS;
+    }
+
+
+
 }
