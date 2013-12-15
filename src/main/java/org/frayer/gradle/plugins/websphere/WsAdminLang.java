@@ -1,14 +1,14 @@
-package org.frayer.gradle.plugins.websphere
+package org.frayer.gradle.plugins.websphere;
 
 /**
  * @author Alexey Pimenov
  */
 public enum WsAdminLang {
 
-    JYTHON,JAVASCRIPT,JACL
+    JYTHON,JAVASCRIPT,JACL;
 
 
-    def String toString(){
+    public String toString(){
         return super.toString().toLowerCase();
     }
 
