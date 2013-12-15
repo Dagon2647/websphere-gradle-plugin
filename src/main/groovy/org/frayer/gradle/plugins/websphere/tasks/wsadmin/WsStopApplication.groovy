@@ -10,57 +10,15 @@ import org.gradle.api.InvalidUserDataException;
 public class WsStopApplication extends WsAdminBase {
 
     @AntProperty("application")
-    private String applicationName;
+   String applicationName;
 
     @AntProperty
-    private String server;
+    String server;
 
     @AntProperty
-    private  String node;
+    String node;
 
-    @Override
-    public  String getProfile() {
-        return super.getProfile();
-    }
 
-    @Override
-    public void setProfile(String profile) {
-        super.setProfile(profile);
-    }
-
-    @Override
-    public String getJavaProperties() {
-        return super.getJavaProperties();
-    }
-
-    @Override
-    public void setJavaProperties(String javaProperties) {
-        super.setJavaProperties(javaProperties);
-    }
-
-    public String getApplicationName() {
-        return applicationName;
-    }
-
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
-    }
-
-    public String getServer() {
-        return server;
-    }
-
-    public void setServer(String server) {
-        this.server = server;
-    }
-
-    public String getNode() {
-        return node;
-    }
-
-    public void setNode(String node) {
-        this.node = node;
-    }
 
     @Override
     public String getAntTaskName() {

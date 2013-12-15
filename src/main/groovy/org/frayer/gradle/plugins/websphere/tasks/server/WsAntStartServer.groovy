@@ -8,15 +8,9 @@ import org.frayer.gradle.plugins.utils.AntProperty;
 public class WsAntStartServer extends WsAntServerControl{
 
     @AntProperty
-    private String script;
+    String script;
 
-    public String getScript() {
-        return script;
-    }
 
-    public void setScript(String script) {
-        this.script = script;
-    }
 
     @Override
     public String getAntTaskName() {

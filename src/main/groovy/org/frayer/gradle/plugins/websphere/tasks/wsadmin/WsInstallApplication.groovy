@@ -11,27 +11,10 @@ class WsInstallApplication extends WsAdminBase {
     String archivePath
 
     @AntProperty
-    String options;
+    private String options;
 
-    @Override
-    protected void setJavaProperties(String javaProperties) {
-        super.setJavaProperties(javaProperties)
-    }
+    String applicationName = project.name;
 
-    @Override
-    protected String getJavaProperties() {
-        return super.getJavaProperties()
-    }
-
-    @Override
-    protected String getProfile() {
-        return super.getProfile()
-    }
-
-    @Override
-    protected void setProfile(String profile) {
-        super.setProfile(profile)
-    }
 
     @Override
     String getAntTaskName() {
@@ -41,5 +24,16 @@ class WsInstallApplication extends WsAdminBase {
     @Override
     String getAntTaskClassName() {
         return "com.ibm.websphere.ant.tasks.InstallApplication"
+    }
+
+    public String getOptions() {
+        if (options != null) return options;
+
+         return "{${defaultJaclParameters}}"
+
+    }
+
+    def String getDefaultJaclParameters(){
+        "-appname ${applicationName}"
     }
 }

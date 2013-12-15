@@ -8,18 +8,18 @@ import org.frayer.gradle.plugins.utils.AntProperty;
 public class WsUninstallApplication extends WsAdminBase {
 
 
-    @AntProperty
-    private String application;
+    @AntProperty("application")
+    private String applicationName;
 
     @AntProperty
     private String options;
 
     public String getApplication() {
-        return application;
+        return applicationName;
     }
 
     public void setApplication(String application) {
-        this.application = application;
+        this.applicationName = application;
     }
 
     public String getOptions() {
