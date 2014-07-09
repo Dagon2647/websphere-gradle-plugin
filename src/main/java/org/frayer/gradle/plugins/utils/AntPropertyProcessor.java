@@ -19,12 +19,8 @@
 
 package org.frayer.gradle.plugins.utils;
 
-import org.apache.commons.lang.StringUtils;
-import org.gradle.api.DefaultTask;
+import org.apache.commons.lang3.StringUtils;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

@@ -1,9 +1,22 @@
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: "idea"
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
-group = 'org.frayer.gradle.plugins.websphere'
-version = '0.0.1-SNAPSHOT'
+
+group = 'org.apimenov.gradle.plugins'
+version = '0.0.2.SNAPSHOT'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3'
+    }
+}
+apply plugin: 'bintray'
 
 repositories {
     mavenCentral()
@@ -12,13 +25,81 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    
+
+    compile 'org.apache.commons:commons-lang3:3.3.2'
+
     testCompile(
         'org.spockframework:spock-core:0.6-groovy-1.8',
         'junit:junit:4.10')
 }
 
+task sourceJar(type: Jar) {
+    from (sourceSets.main.allSource)
+}
+
+artifacts{
+    archives  sourceJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "http://dl.bintray.com/dagon2647/maven"){
+                authentication(userName: "dagon2647", password: project.property("binTray.apiKey"))
+            }
+            pom.project {
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourceJar {
+                classifier "sources"
+            }
+        }
+    }
+}
 
 task wrapper(type: Wrapper) {
-    gradleVersion = "1.8"
+    gradleVersion = "1.12"
 }
+
+bintray {
+    user = 'dagon2647'
+    key = project.property("binTray.apiKey")
+    //apiUrl = 'https://bintray.com/api/v1'
+    publications = ["mavenJava"]
+    // - OR -
+    def pkgName = project.name
+
+
+    dryRun = false //Whether to run this as dry-run, without deploying
+    publish = true //If version should be auto published after an upload
+    pkg {
+        repo = 'maven'
+        name = pkgName
+        desc = 'Gradle plugin for websphere ant tasks'
+        websiteUrl = 'https://github.com/Dagon2647/websphere-gradle-plugin/'
+        issueTrackerUrl = 'https://github.com/Dagon2647/websphere-gradle-plugin/issues'
+        vcsUrl = 'https://github.com/Dagon2647/websphere-gradle-plugin.git'
+        licenses = ['Apache-2.0']
+        publicDownloadNumbers = false
+
+    }
+
+}
+
+bintrayUpload.dependsOn assemble

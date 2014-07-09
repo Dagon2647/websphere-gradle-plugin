@@ -17,18 +17,13 @@
  */
 
 package org.frayer.gradle.plugins.websphere.tasks
-
 import groovy.xml.MarkupBuilder
-import org.frayer.gradle.plugins.utils.PriorityToObjectPropertyPopulator
-import org.frayer.gradle.plugins.utils.PropertyPopulator
 import org.frayer.gradle.plugins.utils.AntProperty
 import org.frayer.gradle.plugins.utils.AntPropertyProcessor
-import org.gradle.api.DefaultTask
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskExecutionException
-
 /**
  * Base class for all tasks which require to launch ws_ant utility
  *
@@ -126,12 +121,12 @@ abstract class WsAntWrapperTask extends ConventionTask {
         writer.toString()
     }
 
-    protected getAntAttributeValues() {
+    protected Map<String,Object> getAntAttributeValues() {
 
         return getAntAttributeValues(this)
     }
 
-    protected getAntAttributeValues(Object object) {
+    protected Map<String,Object> getAntAttributeValues(Object object) {
         def antAttributeValues = [:]
 
         def props = processor.getPropertyValues(object);
