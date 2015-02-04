@@ -3,10 +3,19 @@ apply plugin: 'groovy'
 apply plugin: "idea"
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
+apply plugin: 'bintray'
 
 
 group = 'org.apimenov.gradle.plugins'
-version = '0.0.2.SNAPSHOT'
+version = '0.0.3.SNAPSHOT'
+
+
+idea{
+    module{
+        languageLevel = sourceCompatibility
+    }
+}
+
 
 buildscript {
     repositories {
@@ -16,7 +25,7 @@ buildscript {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3'
     }
 }
-apply plugin: 'bintray'
+
 
 repositories {
     mavenCentral()
@@ -33,6 +42,10 @@ dependencies {
         'junit:junit:4.10')
 }
 
+sourceCompatibility = "1.5"
+targetCompatibility = "1.5"
+
+
 task sourceJar(type: Jar) {
     from (sourceSets.main.allSource)
 }
@@ -41,24 +54,6 @@ artifacts{
     archives  sourceJar
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: "http://dl.bintray.com/dagon2647/maven"){
-                authentication(userName: "dagon2647", password: project.property("binTray.apiKey"))
-            }
-            pom.project {
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        distribution 'repo'
-                    }
-                }
-            }
-        }
-    }
-}
 
 
 publishing {
@@ -68,6 +63,15 @@ publishing {
 
             artifact sourceJar {
                 classifier "sources"
+            }
+            pom.withXml {
+                asNode().dependencies.'*'.findAll() {
+                    it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
+                        dep.name == it.artifactId.text()
+                    }
+                }.each() {
+                    it.scope*.value = 'compile'
+                }
             }
         }
     }
@@ -79,7 +83,7 @@ task wrapper(type: Wrapper) {
 
 bintray {
     user = 'dagon2647'
-    key = project.property("binTray.apiKey")
+    key = project.hasProperty("binTray.apiKey")?project.property("binTray.apiKey"):null
     //apiUrl = 'https://bintray.com/api/v1'
     publications = ["mavenJava"]
     // - OR -
@@ -103,3 +107,7 @@ bintray {
 }
 
 bintrayUpload.dependsOn assemble
+
+bintrayUpload.onlyIf{
+    project.hasProperty("binTray.apiKey")
+}
