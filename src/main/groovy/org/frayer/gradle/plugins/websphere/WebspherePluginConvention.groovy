@@ -33,7 +33,9 @@ public class WebSpherePluginConvention {
     String wasUser;
     String wasPassword;
 
+
     public WebSpherePluginConvention(Project project) {
+
         wasHome = getProjectProperty project, "wasHome";
         if (wasHome == null) {
             wasHome = System.env.WAS_HOME;
@@ -81,7 +83,7 @@ public class WebSpherePluginConvention {
         if (project.extensions.extraProperties.has(property)) {
             result = project.extensions.extraProperties.get(property);
         } else if (project.hasProperty(property)) {
-            result = project.property(result);
+            result = project.properties.get(result);
         }
         return result;
     }
