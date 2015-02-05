@@ -7,8 +7,10 @@ apply plugin: 'bintray'
 
 
 group = 'org.apimenov.gradle.plugins'
-version = '0.0.3.SNAPSHOT'
+version = '0.0.6.SNAPSHOT'
 
+sourceCompatibility = "1.5"
+targetCompatibility = "1.5"
 
 idea{
     module{
@@ -42,8 +44,7 @@ dependencies {
         'junit:junit:4.10')
 }
 
-sourceCompatibility = "1.5"
-targetCompatibility = "1.5"
+
 
 
 task sourceJar(type: Jar) {

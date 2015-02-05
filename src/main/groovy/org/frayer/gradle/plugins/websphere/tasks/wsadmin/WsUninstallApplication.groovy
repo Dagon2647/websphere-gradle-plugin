@@ -9,18 +9,12 @@ public class WsUninstallApplication extends WsAdminBase {
 
 
     @AntProperty("application")
-    private String applicationName;
+    def String applicationName;
 
     @AntProperty
     private String options;
 
-    public String getApplication() {
-        return applicationName;
-    }
 
-    public void setApplication(String application) {
-        this.applicationName = application;
-    }
 
     public String getOptions() {
         return options;

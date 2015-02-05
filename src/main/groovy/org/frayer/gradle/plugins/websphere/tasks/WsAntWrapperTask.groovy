@@ -22,8 +22,13 @@ import org.frayer.gradle.plugins.utils.AntProperty
 import org.frayer.gradle.plugins.utils.AntPropertyProcessor
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.internal.ConventionTask
+import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskExecutionException
+import org.gradle.process.ExecResult
+import org.gradle.process.ExecSpec
+import org.gradle.process.internal.ExecAction
+
 /**
  * Base class for all tasks which require to launch ws_ant utility
  *
@@ -87,12 +92,18 @@ abstract class WsAntWrapperTask extends ConventionTask {
             logger.error(message)
             throw new InvalidUserDataException(message)
         }
+        ExecResult result = project.exec { ExecSpec exec->
+            exec.executable = wsAntScriptPath
+            exec.args("-f",antBuildScriptPath)
+            if(logger.isInfoEnabled()){
+                exec.standardInput = System.in
+                exec.standardOutput = System.out
+                exec.errorOutput = System.out
+            }
 
-        def wsAntProc = "${pathToWsAntScript} -f ${antBuildScriptPath}".execute()
-        wsAntProc.consumeProcessOutput(System.out, System.err)
-        wsAntProc.waitFor()
-        int exitVal = wsAntProc.exitValue();
-        if (exitVal != 0) {
+        }
+
+        if (result.exitValue != 0) {
             throw new TaskExecutionException(this, new RuntimeException("Ant executions recturn code ${exitVal}"))
         }
     }
